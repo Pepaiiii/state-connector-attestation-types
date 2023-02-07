@@ -51,12 +51,14 @@ In such a way the attestation confirms the required transaction did not appear i
 | ------------------------ | ------------ | ------------------ | ---------------------------------------------------------------------------- |
 | `attestationType`        | 2            | `AttestationType`  | Attestation type id for this request, see `AttestationType` enum.            |
 | `sourceId`               | 4            | `SourceId`         | The ID of the underlying chain, see `SourceId` enum.                         |
-| `upperBoundProof`        | 32           | `ByteSequenceLike` | The hash of the confirmation block for an upper query window boundary block. |
+| `messageIntegrityCode`   | 32           | `ByteSequenceLike` | The hash of the expected attestation response appended by string 'Flare'. Used to verify consistency of the attestation response against the anticipated result, thus preventing wrong (forms of) attestations. |
+| `minimalBlockNumber`     | 4            | `NumberLike`       | Minimum number of the block for the query window. Equal to `lowerBoundaryBlockNumber` in the response.           |
 | `deadlineBlockNumber`    | 4            | `NumberLike`       | Maximum number of the block where the transaction is searched for.           |
-| `deadlineTimestamp`      | 4            | `NumberLike`       | Maximum median timestamp of the block where the transaction is searched for. |
+| `deadlineTimestamp`      | 4            | `NumberLike`       | Maximum timestamp of the block where the transaction is searched for. Search range is determined by the bigger of the `deadlineBlockNumber` and the last block with `deadlineTimestamp`. |
 | `destinationAddressHash` | 32           | `NumberLike`       | Hash of exact address to which the payment was done to.                      |
 | `amount`                 | 16           | `NumberLike`       | The exact amount to search for.                                              |
 | `paymentReference`       | 32           | `ByteSequenceLike` | The payment reference to search for.                                         |
+
 
 ## Verification rules
 
@@ -73,7 +75,7 @@ In such a way the attestation confirms the required transaction did not appear i
 | `destinationAddressHash`      | `bytes32` | Hash of the destination address searched for.                                                         |
 | `paymentReference`            | `bytes32` | The payment reference searched for.                                                                   |
 | `amount`                      | `uint128` | The amount searched for.                                                                              |
-| `lowerBoundaryBlockNumber`    | `uint64`  | The first confirmed block that gets checked. It is the lowest block in the synchronized query window. |
+| `lowerBoundaryBlockNumber`    | `uint64`  | The first confirmed block that gets checked. It is exactly 'minimalBlockNumber' from the request.     |
 | `lowerBoundaryBlockTimestamp` | `uint64`  | Timestamp of the `lowerBoundaryBlockNumber`.                                                          |
 | `firstOverflowBlockNumber`    | `uint64`  | The first (lowest) confirmed block with `timestamp > deadlineTimestamp` and `blockNumber  > deadlineBlockNumber`. |
 | `firstOverflowBlockTimestamp` | `uint64`  | Timestamp of the `firstOverflowBlock`.                                                                |

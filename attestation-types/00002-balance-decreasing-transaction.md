@@ -31,13 +31,13 @@ Due to technical limitations on UTXO chains, the procedure for the attestation d
 
 Beside the standard fields (`attestationType`, `sourceId` and `upperBoundProof`) the request for a `BalanceDecreasingTransaction` attestation type contains in addition fields `id` and `inUtxo`.
 
-| Name              | Size (bytes) | Internal type      | Description                                                                  |
-| ----------------- | ------------ | ------------------ | ---------------------------------------------------------------------------- |
-| `attestationType` | 2            | `AttestationType`  | Attestation type id for this request, see `AttestationType` enum.            |
-| `sourceId`        | 4            | `SourceId`         | The ID of the underlying chain, see `SourceId` enum.                         |
-| `upperBoundProof` | 32           | `ByteSequenceLike` | The hash of the confirmation block for an upper query window boundary block. |
-| `id`              | 32           | `ByteSequenceLike` | Transaction hash to search for.                                              |
-| `inUtxo`          | 1            | `NumberLike`       | Index of the source address on UTXO chains. Always 0 for non-UTXO chains.     |
+| Name                   | Size (bytes) | Internal type      | Description                                                                  |
+| ---------------------- | ------------ | ------------------ | ---------------------------------------------------------------------------- |
+| `attestationType`      | 2            | `AttestationType`  | Attestation type id for this request, see `AttestationType` enum.            |
+| `sourceId`             | 4            | `SourceId`         | The ID of the underlying chain, see `SourceId` enum.                         |
+| `messageIntegrityCode` | 32           | `ByteSequenceLike` | The hash of the expected attestation response appended by string 'Flare'. Used to verify consistency of the attestation response against the anticipated result, thus preventing wrong (forms of) attestations. |
+| `id`                   | 32           | `ByteSequenceLike` | Transaction hash to search for.                                              |
+| `inUtxo`               | 1            | `NumberLike`       | Index of the source address on UTXO chains. Always 0 for non-UTXO chains.     |
 
 ## Verification rules
 

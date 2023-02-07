@@ -18,30 +18,27 @@ A successful attestation is provided by providing the following data:
 
 ## Request format
 
-| Name              | Size (bytes) | Internal type      | Description                                                                  |
-| ----------------- | ------------ | ------------------ | ---------------------------------------------------------------------------- |
-| `attestationType` | 2            | `AttestationType`  | Attestation type id for this request, see `AttestationType` enum.            |
-| `sourceId`        | 4            | `SourceId`         | The ID of the underlying chain, see `SourceId` enum.                         |
-| `upperBoundProof` | 32           | `ByteSequenceLike` | The hash of the confirmation block for an upper query window boundary block. |
+| Name                   | Size (bytes) | Internal type      | Description                                                                  |
+| ---------------------- | ------------ | ------------------ | ---------------------------------------------------------------------------- |
+| `attestationType`      | 2            | `AttestationType`  | Attestation type id for this request, see `AttestationType` enum.            |
+| `sourceId`             | 4            | `SourceId`         | The ID of the underlying chain, see `SourceId` enum.                         |
+| `messageIntegrityCode` | 32           | `ByteSequenceLike` | The hash of the expected attestation response appended by string 'Flare'. Used to verify consistency of the attestation response against the anticipated result, thus preventing wrong (forms of) attestations. |
+| `blockNumber`          | 4            | `NumberLike`       | Block number to be proved to be confirmed.                         |
+| `queryWindow`          | 4            | `NumberLike`       | Period in seconds considered for sampling block production. The block with number `lowestQueryWindowBlockNumber` in the attestation response is defined as the last block with the timestamp strictly smaller than `block.timestamp - queryWindow`.|
 
 ## Verification rules
 
-Given the upper boundary for the query range (`upperBoundProof`), the confirmed block on the upper query window boundary is determined and provided in the response, together with the block timestamp. In addition, the number of confirmations that were used to determine the confirmation block is provided. Also average block production time in the query window is calculated and returned. Here we take the lowest and the highest (confirmed) block number of the query window and their respective block timestamps. The timestamps are in seconds, but the average block production rate is given in milliseconds.
-
-``` text
-                                        (highestBlock.timestamp - lowestBlock.timestamp) * 1000
-averageBlockProductionTimeMs = floor(  ---------------------------------------------------------- )
-                                            highestBlock.number - lowestBlock.number
-```
+If the block with the number `blockNumber` is confirmed the block number and the timestamp are provided in the response. In addition, the number of confirmations that were used to determine the confirmation is provided. The block with number `lowestQueryWindowBlockNumber` in the attestation response is defined as the last block with the timestamp strictly smaller than `block.timestamp - queryWindow`. Attestation is valid only if this block can be obtained.
 
 ## Response format
 
-| Name                           | Type         | Description                                                          |
-| ------------------------------ | ------------ | -------------------------------------------------------------------- |
-| `blockNumber`                  | `uint64`     | Number of the transaction block on the underlying chain.             |
-| `blockTimestamp`               | `uint64`     | Timestamp of the transaction block on the underlying chain.          |
-| `numberOfConfirmations`        | `uint8`      | Number of confirmations for the blockchain.                          |
-| `averageBlockProductionTimeMs` | `uint64`     | Average block production time based on the data in the query window. |
+| Name                              | Type         | Description                                                          |
+| --------------------------------- | ------------ | -------------------------------------------------------------------- |
+| `blockNumber`                     | `uint64`     | Number of the transaction block on the underlying chain.             |
+| `blockTimestamp`                  | `uint64`     | Timestamp of the transaction block on the underlying chain.          |
+| `numberOfConfirmations`           | `uint8`      | Number of confirmations for the blockchain.                          |
+| `lowestQueryWindowBlockNumber`    | `uint64`     | Lowest query window block number.                                    |
+| `lowestQueryWindowBlockTimestamp` | `uint64`     | Lowest query window block timestamp.                                 |
 
 Next: [00004 - Referenced Payment Nonexistence](./00004-referenced-payment-nonexistence.md)
 
